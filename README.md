@@ -1,4 +1,4 @@
-# きびだんご'sぷろじぇくと
+# きびだんご's project
 
 ## Project setup
 ```
