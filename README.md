@@ -1,4 +1,4 @@
-# dango-holiday
+# きびだんご'sぷろじぇくと
 
 ## Project setup
 ```
