@@ -29,7 +29,7 @@ import axios from "axios";
 //     })
 // }
 
-export const getDayOfWeekOnHoliday = (year = "2017", month = "05", day = "02") => {
+export const getDayOfWeekOnHoliday = (year = "2021", month = "05", day = "03") => {
   /*
   params:
     year: string,
@@ -37,12 +37,13 @@ export const getDayOfWeekOnHoliday = (year = "2017", month = "05", day = "02") =
     day: string
 
   return:
-    void
+    date.getDay(): number型で0~6の範囲を取り、日曜～土曜に対応
   */
 
   const dayOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
-  let date = new Date(year, month, day);
+  let date = new Date(`${year}/${month}/${day}`);
   console.log(dayOfWeek[date.getDay()] + '曜日');
+  return date.getDay();
 }
 
 // goldenWeek: Array<{
@@ -50,6 +51,10 @@ export const getDayOfWeekOnHoliday = (year = "2017", month = "05", day = "02") =
 
 
 export const byGoldenWeek = () => {
+  /**
+   * return:
+   *  countdown: number
+   */
   let today = new Date();
   let targetDay = new Date("2030/06/14"); // ゴールデンウィーク始まりの日に変更する
   let countdown = Math.ceil((targetDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -82,15 +87,33 @@ export const getHoliday = (year = "2021") => {
   axios.get(`https://holidays-jp.github.io/api/v1/${year}/date.json`)
     .then((res) => {
       const holidays = Object.keys(res.data);
-      console.log(holidays);
-      const goldenWeek = [];
+      let goldenWeek = [];
       holidays.map((holiday) => { // sliceの引数は年-月-日("〇〇〇〇-〇〇-〇〇")の月の部分に当たる
-        if (holiday.slice(5,7) === "04" || holiday.slice(5,7) === "05") {
+        if (holiday.slice(5,7) === "05") {
           holiday = holiday.replace(/-/g, "/");
           goldenWeek.push(holiday);
         }
       })
-      console.log(goldenWeek);
+      if (getDayOfWeekOnHoliday(year, "05", "03") === 0) {
+        goldenWeek.push(`${year}/05/02`);
+      } else if (getDayOfWeekOnHoliday(year, "05", "03") === 1) {
+        goldenWeek.push(`${year}/05/01`);
+        goldenWeek.push(`${year}/05/02`);
+      } else if (getDayOfWeekOnHoliday(year, "05", "03") === 2) {
+        goldenWeek.push(`${year}/05/01`);
+        goldenWeek.push(`${year}/05/07`);
+      } else if (getDayOfWeekOnHoliday(year, "05", "03") === 3) {
+        goldenWeek.push(`${year}/05/06`);
+        goldenWeek.push(`${year}/05/07`);
+      } else if (getDayOfWeekOnHoliday(year, "05", "03") === 4) {
+        goldenWeek.push(`${year}/05/06`);
+      } else if (getDayOfWeekOnHoliday(year, "05", "03") === 5) {
+        //
+      } else if (getDayOfWeekOnHoliday(year, "05", "03") === 6) {
+        //
+      }
+      const goldenWeekSorted = goldenWeek.sort((a, b) => new Date(a) - new Date(b))
+      return goldenWeekSorted;
     })
     .catch((err) => {
       console.log(err);
