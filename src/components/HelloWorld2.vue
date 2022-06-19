@@ -7,6 +7,7 @@
           :items="years"
           outlined
           dense
+          label="年を入力してください"
           v-model="year"
           @change="yearChange()"
         >
@@ -29,8 +30,7 @@
         ref="calendar"
         v-model="value"
         :events="holidays"
-        :event-color="getHolidayColor"
-        :type="type"
+        :event-color="getVacationColor"
         locale="ja-jp"
       ></v-calendar>
     </v-sheet>
@@ -39,17 +39,21 @@
 
 <script>
 import moment from "moment";
+import { getHoliday } from "../logic";
+// import { getDayOfWeekOnHoliday } from "../logic";
+import { getDaysOfWeekOnHolidayLike } from "../logic";
 
 export default {
   name: "HelloWorld2",
 
   data: () => ({
-    years: [2020, 2021, 2022, 2023, 2024],
+    years: [],
     year: "",
 
+    today: moment().format("yyyy-MM-DD"),
     value: moment().format("yyyy-MM-DD"), // 現在日時
 
-    events: [],
+    holidays: [],
     colors: [
       "blue",
       "indigo",
@@ -58,34 +62,64 @@ export default {
       "green",
       "orange",
       "grey darken-1",
-    ], //「休み」表記の色選べる
+    ], //休み表記の色選べる
+
+    holidayLen: "",
   }),
 
+  //初回読み込み時の年を取得
   mounted() {
-    this.getHoliday();
+    this.year = this.value.split("-")[0];
+    const y = parseInt(this.year);
+    this.years.push(y - 2, y - 1, y, y + 1);
+    getDaysOfWeekOnHolidayLike();
+    // const genzai = new Date();
+    // console.log(genzai.getDay());
+  },
+
+  //初回読み込み時にyearに値が入ると実行
+  watch: {
+    year() {
+      this.holidayLen = getHoliday(this.year);
+      this.getVacation();
+    },
   },
 
   computed: {
-    //読み込み時に現在の日付を取得
+    //読み込み時に、カレンダーのタイトルに現在の年月を表示
     title() {
-      return moment(this.value).format("yyyy年 M月"); // 表示用文字列を返す
+      const res = moment(this.value).format("yyyy年 M月");
+      return res;
     },
   },
 
   methods: {
-    //yearが変更したとき
+    //yearを初回から変更したとき
     yearChange() {
-      this.value = `${this.year}` + "-04-01";
+      this.holidayLen = getHoliday(this.year);
+      console.log(this.holidayLen);
+      this.value = `${this.year}` + "-05-01";
+      this.getVacation();
     },
 
-    //「休み」の表記をする関数
-    //試しに5/3~5/6まで休みにしてみる
-    getHoliday() {
+    //休みの表記をする関数
+    getVacation() {
+      console.log(this.year);
+      //   const vacationLen = 3 + parseInt(this.holidayLen) - 1;
+      //   console.log(vacationLen);
       const holidays = [
+        // {
+        //   name: "祝日休み",
+        //   start: moment(`${this.year}` + "-05-03").toDate(),
+        //   end: moment(`${this.year}` + "-05-5").toDate(),
+        //   color: "blue",
+        // },
         {
-          name: "休み",
-          start: moment("2022-05-03").toDate(),
-          end: moment("2022-05-06").toDate(),
+          name: `${this.holidayLen}連休`,
+          start: moment(`${this.year}` + "-05-03").toDate(),
+          end: moment(
+            `${this.year}-05-${3 + parseInt(this.holidayLen) - 1}`
+          ).toDate(),
           color: "blue",
         },
       ];
@@ -93,8 +127,8 @@ export default {
       return this.holiday;
     },
 
-    //「休み」の日を色付け
-    getHolidayColor(holiday) {
+    //休みの日を色付け
+    getVacationColor(holiday) {
       return holiday.color;
     },
   },
