@@ -39,7 +39,7 @@
 <script>
 // import HelloWorld from './components/HelloWorld';
 import HelloWorld2 from './components/HelloWorld2';
-import { getHoliday, getDayOfWeekOnHoliday, byGoldenWeek, countHoliday } from "./logic";
+import { getHoliday } from "./logic";
 
 
 export default {
@@ -54,12 +54,13 @@ export default {
   }),
   mounted(){
     getHoliday();
-    getDayOfWeekOnHoliday();
-    getDayOfWeekOnHoliday("2017", "05", "03");
-    getDayOfWeekOnHoliday("2017", "05", "04");
-    getDayOfWeekOnHoliday("2017", "05", "05");
-    byGoldenWeek();
-    countHoliday();
+    // getDayOfWeekOnHoliday();
+    // getDayOfWeekOnHoliday("2017", "05", "03");
+    // getDayOfWeekOnHoliday("2017", "05", "04");
+    // getDayOfWeekOnHoliday("2017", "05", "05");
+    // byGoldenWeek();
+    // countHoliday();
+    // countHoliday(2021);
   },
 };
 </script>
